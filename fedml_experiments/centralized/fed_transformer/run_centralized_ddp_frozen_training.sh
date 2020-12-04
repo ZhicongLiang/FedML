@@ -7,11 +7,12 @@ MASTER_ADDR=$4
 MASTER_PORT=$5
 DATASET=$6
 DATA_DIR=$7
-if_name=8
+if_name=$8
 LR=$9
 fine_tune_layer_num=${10}
 task_specific_layer_num=${11}
 
+# sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/sourcecode/dataset/cv/ImageNet lo 0.03 0 0
 
 python -m torch.distributed.launch \
 --nproc_per_node=$NPROC_PER_NODE --nnodes=$NNODE --node_rank=$NODE_RANK \
