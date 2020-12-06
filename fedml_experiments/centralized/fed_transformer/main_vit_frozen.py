@@ -113,7 +113,7 @@ def _extract_features(args, model, train_dl, test_dl):
 
 
 def _infer(data_extracted_features):
-    time_start_test_per_batch = time.time()
+
     model.eval()
 
     test_data_extracted_features = data_extracted_features
@@ -122,6 +122,7 @@ def _infer(data_extracted_features):
     criterion = nn.CrossEntropyLoss().to(device)
     with torch.no_grad():
         for batch_idx in test_data_extracted_features.keys():
+            time_start_test_per_batch = time.time()
             (x, labels) = test_data_extracted_features[batch_idx]
             x = x.to(device)
             labels = labels.to(device)
@@ -138,14 +139,12 @@ def _infer(data_extracted_features):
             test_loss += loss.item() * labels.size(0)
             test_total += labels.size(0)
 
-    time_end_test_per_batch = time.time()
-
-    # logging.info("time per _infer = " + str(time_end_test_per_batch - time_start_test_per_batch))
+            time_end_test_per_batch = time.time()
+            logging.info("time per _infer = " + str(time_end_test_per_batch - time_start_test_per_batch))
     return test_acc, test_total, test_loss
 
 
 def _infer_from_raw_data(train_dl):
-    time_start_test_per_batch = time.time()
     model.eval()
 
     test_loss = test_acc = test_total = 0.
@@ -163,9 +162,8 @@ def _infer_from_raw_data(train_dl):
             test_loss += loss.item() * labels.size(0)
             test_total += labels.size(0)
 
-    time_end_test_per_batch = time.time()
-
-    # logging.info("time per _infer = " + str(time_end_test_per_batch - time_start_test_per_batch))
+            time_end_test_per_batch = time.time()
+            logging.info("time per _infer = " + str(time_end_test_per_batch - time_start_test_per_batch))
     return test_acc, test_total, test_loss
 
 
@@ -382,7 +380,7 @@ def load_cifar_centralized_training_for_vit(args):
         testset = datasets.CIFAR10(root=args.data_dir,
                                    train=False,
                                    download=True,
-                                   transform=transform_test) if args.is_distributed == 0 else None
+                                   transform=transform_test)
     else:
         trainset = datasets.CIFAR100(root=args.data_dir,
                                      train=True,
@@ -391,7 +389,7 @@ def load_cifar_centralized_training_for_vit(args):
         testset = datasets.CIFAR100(root=args.data_dir,
                                     train=False,
                                     download=True,
-                                    transform=transform_test) if args.is_distributed == 0 else None
+                                    transform=transform_test)
 
     if args.is_distributed == 1:
         torch.distributed.barrier()

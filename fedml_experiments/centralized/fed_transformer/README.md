@@ -16,12 +16,23 @@ python ./main_vit_fine_tune.py --lr 0.003 --dataset imagenet --data_dir /home/ch
 
 
 DDP Training
+
+CIFAR-10
+
+CIFAR-100
+```
+sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 cifar100 ./../../../data/cifar100 lo 0.03 0 0
+```
+
+ImageNet
+```
+sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/dataset/cv/imagenet ib0 0.03 0 0
+sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/sourcecode/dataset/cv/ImageNet lo 0.03 0 0
+```
+
+
 ```
 # sh run_centralized_ddp_train.sh 4 1 0 127.0.0.1 11111 
-
-# sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/dataset/cv/imagenet ib0 0.03 0 0
-
-# sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/sourcecode/dataset/cv/ImageNet lo 0.03 0 0
 
 nohup sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/sourcecode/dataset/cv/ImageNet lo 0.03 0 0 > ./machine1_imagenet.txt 2>&1 &
 nohup sh run_centralized_ddp_train.sh 4 1 0 192.168.11.2 22222 cifar10 ./../../../data/cifar10 0.003 > ./machine1.txt 2>&1 &
