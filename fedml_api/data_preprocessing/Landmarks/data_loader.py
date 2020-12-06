@@ -1,7 +1,3 @@
-import os
-import sys
-import time
-import logging
 import collections
 import csv
 
@@ -14,15 +10,16 @@ from .datasets import Landmarks
 
 
 def _read_csv(path: str):
-  """Reads a csv file, and returns the content inside a list of dictionaries.
-  Args:
-    path: The path to the csv file.
-  Returns:
-    A list of dictionaries. Each row in the csv file will be a list entry. The
-    dictionary is keyed by the column names.
-  """
-  with open(path, 'r') as f:
-    return list(csv.DictReader(f))
+    """Reads a csv file, and returns the content inside a list of dictionaries.
+    Args:
+      path: The path to the csv file.
+    Returns:
+      A list of dictionaries. Each row in the csv file will be a list entry. The
+      dictionary is keyed by the column names.
+    """
+    with open(path, 'r') as f:
+        return list(csv.DictReader(f))
+
 
 # class Cutout(object):
 #     def __init__(self, length):
@@ -92,8 +89,11 @@ def _data_transforms_landmarks():
     # IMAGENET_MEAN = [0.5071, 0.4865, 0.4409]
     # IMAGENET_STD = [0.2673, 0.2564, 0.2762]
 
-    IMAGENET_MEAN = [0.485, 0.456, 0.406]
-    IMAGENET_STD = [0.229, 0.224, 0.225]
+    # IMAGENET_MEAN = [0.485, 0.456, 0.406]
+    # IMAGENET_STD = [0.229, 0.224, 0.225]
+
+    IMAGENET_MEAN = [0.5, 0.5, 0.5]
+    IMAGENET_STD = [0.5, 0.5, 0.5]
 
     image_size = 224
     train_transform = transforms.Compose([
@@ -115,7 +115,6 @@ def _data_transforms_landmarks():
     return train_transform, valid_transform
 
 
-
 def get_mapping_per_user(fn):
     """
     mapping_per_user is {'user_id': [{'user_id': xxx, 'image_id': xxx, 'class': xxx} ... {}], 
@@ -128,13 +127,11 @@ def get_mapping_per_user(fn):
     mapping_table = _read_csv(fn)
     expected_cols = ['user_id', 'image_id', 'class']
     if not all(col in mapping_table[0].keys() for col in expected_cols):
-        logger.error('%s has wrong format.', fn)
         raise ValueError(
             'The mapping file must contain user_id, image_id and class columns. '
             'The existing columns are %s' % ','.join(mapping_table[0].keys()))
 
     data_local_num_dict = dict()
-
 
     mapping_per_user = collections.defaultdict(list)
     data_files = []
@@ -148,7 +145,7 @@ def get_mapping_per_user(fn):
         num_local = len(mapping_per_user[user_id])
         # net_dataidx_map[user_id]= (sum_temp, sum_temp+num_local)
         # data_local_num_dict[user_id] = num_local
-        net_dataidx_map[int(user_id)]= (sum_temp, sum_temp+num_local)
+        net_dataidx_map[int(user_id)] = (sum_temp, sum_temp + num_local)
         data_local_num_dict[int(user_id)] = num_local
         sum_temp += num_local
         data_files += mapping_per_user[user_id]
@@ -164,7 +161,8 @@ def get_dataloader(dataset, datadir, train_files, test_files, train_bs, test_bs,
 
 # for local devices
 def get_dataloader_test(dataset, datadir, train_files, test_files, train_bs, test_bs, dataidxs_train, dataidxs_test):
-    return get_dataloader_test_Landmarks(datadir, train_files, test_files, train_bs, test_bs, dataidxs_train, dataidxs_test)
+    return get_dataloader_test_Landmarks(datadir, train_files, test_files, train_bs, test_bs, dataidxs_train,
+                                         dataidxs_test)
 
 
 def get_dataloader_Landmarks(datadir, train_files, test_files, train_bs, test_bs, dataidxs=None):
@@ -181,12 +179,14 @@ def get_dataloader_Landmarks(datadir, train_files, test_files, train_bs, test_bs
     return train_dl, test_dl
 
 
-def get_dataloader_test_Landmarks(datadir, train_files, test_files, train_bs, test_bs, dataidxs_train=None, dataidxs_test=None):
+def get_dataloader_test_Landmarks(datadir, train_files, test_files, train_bs, test_bs, dataidxs_train=None,
+                                  dataidxs_test=None):
     dl_obj = Landmarks
 
     transform_train, transform_test = _data_transforms_landmarks()
 
-    train_ds = dl_obj(datadir, train_files, dataidxs=dataidxs_train, train=True, transform=transform_train, download=True)
+    train_ds = dl_obj(datadir, train_files, dataidxs=dataidxs_train, train=True, transform=transform_train,
+                      download=True)
     test_ds = dl_obj(datadir, test_files, dataidxs=dataidxs_test, train=False, transform=transform_test, download=True)
 
     train_dl = data.DataLoader(dataset=train_ds, batch_size=train_bs, shuffle=True, drop_last=False)
@@ -195,10 +195,8 @@ def get_dataloader_test_Landmarks(datadir, train_files, test_files, train_bs, te
     return train_dl, test_dl
 
 
-
-def load_partition_data_landmarks(dataset, data_dir, fed_train_map_file, fed_test_map_file, 
-                            partition_method=None, partition_alpha=None, client_number=233, batch_size=10):
-
+def load_partition_data_landmarks(dataset, data_dir, fed_train_map_file, fed_test_map_file,
+                                  partition_method=None, partition_alpha=None, client_number=233, batch_size=10):
     train_files, data_local_num_dict, net_dataidx_map = get_mapping_per_user(fed_train_map_file)
     test_files = _read_csv(fed_test_map_file)
 
@@ -206,7 +204,8 @@ def load_partition_data_landmarks(dataset, data_dir, fed_train_map_file, fed_tes
     # logging.info("traindata_cls_counts = " + str(traindata_cls_counts))
     train_data_num = len(train_files)
 
-    train_data_global, test_data_global = get_dataloader(dataset, data_dir, train_files, test_files, batch_size, batch_size)
+    train_data_global, test_data_global = get_dataloader(dataset, data_dir, train_files, test_files, batch_size,
+                                                         batch_size)
     # logging.info("train_dl_global number = " + str(len(train_data_global)))
     # logging.info("test_dl_global number = " + str(len(test_data_global)))
     test_data_num = len(test_files)
@@ -216,7 +215,6 @@ def load_partition_data_landmarks(dataset, data_dir, fed_train_map_file, fed_tes
     train_data_local_dict = dict()
     test_data_local_dict = dict()
 
-
     for client_idx in range(client_number):
         dataidxs = net_dataidx_map[client_idx]
         # local_data_num = len(dataidxs)
@@ -225,8 +223,9 @@ def load_partition_data_landmarks(dataset, data_dir, fed_train_map_file, fed_tes
         # logging.info("client_idx = %d, local_sample_number = %d" % (client_idx, local_data_num))
 
         # training batch size = 64; algorithms batch size = 32
-        train_data_local, test_data_local = get_dataloader(dataset, data_dir, train_files, test_files, batch_size, batch_size,
-                                                 dataidxs)
+        train_data_local, test_data_local = get_dataloader(dataset, data_dir, train_files, test_files, batch_size,
+                                                           batch_size,
+                                                           dataidxs)
         # logging.info("client_idx = %d, batch_num_train_local = %d, batch_num_test_local = %d" % (
         #     client_idx, len(train_data_local), len(test_data_local)))
         train_data_local_dict[client_idx] = train_data_local
@@ -252,14 +251,15 @@ if __name__ == '__main__':
         fed_train_map_file = fed_g23k_train_map_file
         fed_test_map_file = fed_g23k_test_map_file
     elif dataset_name == 'g160k':
-        client_number = 1262 
+        client_number = 1262
         fed_train_map_file = fed_g160k_train_map_file
         fed_test_map_file = fed_g160k_map_file
 
     train_data_num, test_data_num, train_data_global, test_data_global, \
-        data_local_num_dict, train_data_local_dict, test_data_local_dict, class_num = \
-        load_partition_data_landmarks(None, data_dir, fed_train_map_file, fed_test_map_file, 
-                            partition_method=None, partition_alpha=None, client_number=client_number, batch_size=10)
+    data_local_num_dict, train_data_local_dict, test_data_local_dict, class_num = \
+        load_partition_data_landmarks(None, data_dir, fed_train_map_file, fed_test_map_file,
+                                      partition_method=None, partition_alpha=None, client_number=client_number,
+                                      batch_size=10)
 
     print(train_data_num, test_data_num, class_num)
     print(data_local_num_dict)
@@ -281,6 +281,3 @@ if __name__ == '__main__':
             i += 1
             if i > 5:
                 break
-
-
-
