@@ -26,7 +26,7 @@ sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 cifar100 ./../..
 
 ImageNet
 ```
-sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/dataset/cv/imagenet ib0 0.03 0 0
+nohup sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/dataset/cv/imagenet ib0 0.03 0 0 > ./machine1_imagenet.txt 2>&1 &
 sh run_centralized_ddp_frozen_training.sh 4 1 0 127.0.0.1 11111 imagenet /home/chaoyanghe/sourcecode/dataset/cv/ImageNet lo 0.03 0 0
 ```
 
