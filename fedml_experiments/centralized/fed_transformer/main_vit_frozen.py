@@ -16,6 +16,8 @@ import wandb
 from torch.utils.data import RandomSampler, SequentialSampler, DataLoader, DistributedSampler
 from torchvision import transforms, datasets
 
+from fedml_api.data_preprocessing.Landmarks.data_loader import load_partition_data_landmarks
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
 from fedml_api.data_preprocessing.ImageNet.datasets import ImageNet
 
@@ -572,6 +574,7 @@ if __name__ == "__main__":
         )
 
     # Dataset
+    logging.info("load_data. dataset_name = %s" % args.dataset)
     if args.dataset == "cifar10":
         train_dl, test_dl = load_cifar_centralized_training_for_vit(args)
         class_num = 10
@@ -579,7 +582,6 @@ if __name__ == "__main__":
         train_dl, test_dl = load_cifar_centralized_training_for_vit(args)
         class_num = 100
     elif args.dataset == "imagenet":
-        logging.info("load_data. dataset_name = %s" % args.dataset)
         train_dl, test_dl = load_imagenet_centralized_training_for_vit(args)
         class_num = 1000
     else:

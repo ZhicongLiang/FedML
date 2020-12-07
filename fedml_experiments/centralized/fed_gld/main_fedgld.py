@@ -14,6 +14,8 @@ import wandb
 # add the FedML root directory to the python path
 
 # sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
+from fedml_api.model.cv.transformer.vit.vision_transformer_task_specific_layer import CONFIGS, VisionTransformer
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
 
 from fedml_api.data_preprocessing.FederatedEMNIST.data_loader import load_partition_data_federated_emnist
@@ -106,6 +108,11 @@ def add_args(parser):
 
     parser.add_argument('--gpu', type=int, default=0,
                         help='gpu')
+
+    parser.add_argument("--pretrained_dir", type=str,
+                        default="./../../../fedml_api/model/cv/pretrained/Transformer/vit/ViT-B_16.npz",
+                        help="Where to search for pretrained vit models.")
+    
 
     args = parser.parse_args()
     return args
@@ -269,6 +276,17 @@ def create_model(args, model_name, output_dim):
         # default is 'efficientnet-b0'
         model = EfficientNet.from_name(
             model_name='efficientnet-b0', num_classes=output_dim)
+    elif model_name == "transformer":
+        model_type = 'vit-B_16'
+        # pretrained on ImageNet (224x224), and fine-tuned on (384x384) high resolution.
+        config = CONFIGS[model_type]
+        logging.info("Vision Transformer Configuration: " + str(config))
+        model = VisionTransformer(config, args.img_size, zero_head=True, num_classes=output_dim,
+                                  fine_tune_layer_num=0,
+                                  task_specific_layer_num=0)
+        model.load_from(np.load(args.pretrained_dir))
+    else:
+        raise Exception("no such model!")
 
     return model
 
