@@ -204,6 +204,7 @@ def load_data(args, dataset_name):
                train_data_local_num_dict, train_data_local_dict, test_data_local_dict, class_num]
     return dataset
 
+
 def combine_batches(batches):
     full_x = torch.from_numpy(np.asarray([])).float()
     full_y = torch.from_numpy(np.asarray([])).long()
@@ -211,6 +212,7 @@ def combine_batches(batches):
         full_x = torch.cat((full_x, batched_x), 0)
         full_y = torch.cat((full_y, batched_y), 0)
     return [(full_x, full_y)]
+
 
 def create_model(args, model_name, output_dim):
     logging.info("create_model. model_name = %s, output_dim = %s" % (model_name, output_dim))

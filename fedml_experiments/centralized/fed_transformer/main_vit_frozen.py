@@ -16,9 +16,8 @@ import wandb
 from torch.utils.data import RandomSampler, SequentialSampler, DataLoader, DistributedSampler
 from torchvision import transforms, datasets
 
-from fedml_api.data_preprocessing.Landmarks.data_loader import load_partition_data_landmarks
-
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
+
 from fedml_api.data_preprocessing.ImageNet.datasets import ImageNet
 
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -115,7 +114,6 @@ def _extract_features(args, model, train_dl, test_dl):
 
 
 def _infer(data_extracted_features):
-
     model.eval()
 
     test_data_extracted_features = data_extracted_features
