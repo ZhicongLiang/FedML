@@ -417,8 +417,6 @@ def load_imagenet_centralized_training_for_vit(args):
     """
     the std 0.5 normalization is proposed by BiT (Big Transfer), which can increase the accuracy around 3%
     """
-    # CIFAR_MEAN = [0.49139968, 0.48215827, 0.44653124]
-    # CIFAR_STD = [0.24703233, 0.24348505, 0.26158768]
     CIFAR_MEAN = [0.5, 0.5, 0.5]
     CIFAR_STD = [0.5, 0.5, 0.5]
 
