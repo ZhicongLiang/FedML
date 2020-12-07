@@ -51,32 +51,13 @@ class CentralizedTrainer(object):
             }
             for batch_idx, (x, labels) in enumerate(self.train_global):
                 # logging.info(images.shape)
-                x, labels = x.to(self.device), labels.to(self.device)
+                x = x.to(self.device)
+                labels = labels.to(self.device)
                 self.optimizer.zero_grad()
                 log_probs = self.model(x)
                 loss = self.criterion(log_probs, labels)
                 loss.backward()
                 self.optimizer.step()
-                # batch_loss.append(loss.item())
-
-                target = labels
-                pred = log_probs
-                if self.args.dataset == "stackoverflow_lr":
-                    predicted = (pred > .5).int()
-                    correct = predicted.eq(target).sum(axis=-1).eq(target.size(1)).sum()
-                    true_positive = ((target * predicted) > .1).int().sum(axis=-1)
-                    precision = true_positive / (predicted.sum(axis=-1) + 1e-13)
-                    recall = true_positive / (target.sum(axis=-1) + 1e-13)
-                    batch_train_metrics['test_precision'] += precision.sum().item()
-                    batch_train_metrics['test_recall'] += recall.sum().item()
-                else:
-                    _, predicted = torch.max(pred, -1)
-                    correct = predicted.eq(target).sum()
-
-                batch_train_metrics['test_correct'] += correct.item()
-                batch_train_metrics['test_loss'] += loss.item() * target.size(0)
-                batch_train_metrics['test_total'] += target.size(0)
-
                 logging.info('Local Training Epoch: {} {}-th iters\t Loss: {:.6f}'.format(epoch,
                                                                                           batch_idx, loss.item()))
             if batch_train_metrics['test_total'] > 0:

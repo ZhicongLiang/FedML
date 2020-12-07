@@ -105,7 +105,7 @@ def add_args(parser):
                         help='gpu')
 
     parser.add_argument("--pretrained_dir", type=str,
-                        default="./../../../fedml_api/model/cv/pretrained/Transformer/vit/ViT-B_16.npz",
+                        default="./../../fedml_api/model/cv/pretrained/Transformer/vit/ViT-B_16.npz",
                         help="Where to search for pretrained vit models.")
     
 
@@ -276,7 +276,7 @@ def create_model(args, model_name, output_dim):
         # pretrained on ImageNet (224x224), and fine-tuned on (384x384) high resolution.
         config = CONFIGS[model_type]
         logging.info("Vision Transformer Configuration: " + str(config))
-        model = VisionTransformer(config, args.img_size, zero_head=True, num_classes=output_dim,
+        model = VisionTransformer(config, 224, zero_head=True, num_classes=output_dim,
                                   fine_tune_layer_num=0,
                                   task_specific_layer_num=0)
         model.load_from(np.load(args.pretrained_dir))
