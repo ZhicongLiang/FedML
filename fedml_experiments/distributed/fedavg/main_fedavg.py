@@ -40,8 +40,6 @@ from fedml_api.model.linear.lr import LogisticRegression
 from fedml_api.model.cv.mobilenet_v3 import MobileNetV3
 from fedml_api.model.cv.efficientnet import EfficientNet
 
-
-
 from fedml_api.distributed.fedavg.FedAvgAPI import FedML_init, FedML_FedAvg_distributed
 
 

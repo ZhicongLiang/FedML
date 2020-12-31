@@ -1,3 +1,4 @@
+
 import argparse
 import logging
 import os
@@ -7,6 +8,8 @@ import sys
 import numpy as np
 import torch
 import wandb
+
+os.system('wandb login 828c143923c66f6f634644f6941736cefc37258a')
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../../../")))
 
